@@ -1,12 +1,8 @@
 import { HeroSection } from "@/components/HeroSection";
 import { UploadSection } from "@/components/UploadSection";
-import { AnnotationViewer } from "@/components/AnnotationViewer";
 import { AuthSection } from "@/components/AuthSection";
 import { DeveloperSettings } from "@/components/DeveloperSettings";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
-
-// Sample image for demonstration
-const sampleImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600' viewBox='0 0 800 600'%3E%3Crect width='800' height='600' fill='%23f3f4f6'/%3E%3Ctext x='400' y='300' text-anchor='middle' font-family='Arial' font-size='24' fill='%23374151'%3ERoof Inspection Sample%3C/text%3E%3C/svg%3E";
 
 const Index = () => {
   return (
@@ -39,19 +35,6 @@ const Index = () => {
         <div id="upload">
           <UploadSection />
         </div>
-
-        {/* Demo Results Section */}
-        <section className="py-20 bg-wakanda-surface">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold mb-4 text-gradient">See It In Action</h2>
-              <p className="text-xl text-muted-foreground">
-                Here's how our AI analyzes your drone footage for hail damage
-              </p>
-            </div>
-            <AnnotationViewer originalImage={sampleImage} />
-          </div>
-        </section>
 
         <div id="pricing">
           <AuthSection />

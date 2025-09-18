@@ -50,19 +50,22 @@ export const AnnotationViewer: React.FC<AnnotationViewerProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
-  // Sample data for demonstration
-  const sampleResponse: APIResponse = {
-    num_detections: 5,
-    predictions: [
-      { bbox: [100, 150, 180, 220], class: 0, confidence: 0.95 },
-      { bbox: [300, 80, 360, 140], class: 0, confidence: 0.87 },
-      { bbox: [450, 200, 520, 270], class: 0, confidence: 0.92 },
-      { bbox: [200, 300, 250, 350], class: 0, confidence: 0.78 },
-      { bbox: [380, 320, 450, 390], class: 0, confidence: 0.89 }
-    ]
-  };
+  if (!apiResponse) {
+    return (
+      <section className="py-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <h2 className="text-4xl font-bold mb-4 text-gradient">Upload an Image to See Results</h2>
+            <p className="text-xl text-muted-foreground">
+              Process your drone footage to view AI-powered hail damage detection
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
-  const data = apiResponse || sampleResponse;
+  const data = apiResponse;
 
   useEffect(() => {
     drawAnnotations();
