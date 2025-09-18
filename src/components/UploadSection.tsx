@@ -106,6 +106,19 @@ export const UploadSection = () => {
       return;
     }
 
+    // Get backend settings from localStorage
+    const endpoint = localStorage.getItem('hailvision_endpoint');
+    const apiKey = localStorage.getItem('hailvision_api_key');
+
+    if (!endpoint) {
+      toast({
+        title: "Backend not configured",
+        description: "Please configure your computer vision API endpoint in Developer Settings",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsProcessing(true);
     setApiResponse(null);
     setProcessedImage(null);
@@ -115,34 +128,58 @@ export const UploadSection = () => {
       description: "Your files are being analyzed for hail damage..."
     });
 
-    // This would connect to the backend API
-    // For now, we'll simulate processing with sample API response
-    setTimeout(() => {
+    try {
       const firstImageFile = uploadedFiles.find(f => f.type === 'image');
-      if (firstImageFile?.preview) {
-        setProcessedImage(firstImageFile.preview);
-        
-        // Sample API response matching your backend format
-        const sampleResponse: APIResponse = {
-          num_detections: 14,
-          predictions: [
-            {"bbox": [473.6, 604.1, 569.4, 694.7], "class": 0, "confidence": 0.93},
-            {"bbox": [329.2, 372.8, 402.6, 433.6], "class": 0, "confidence": 0.93},
-            {"bbox": [513.0, 463.5, 593.3, 531.1], "class": 0, "confidence": 0.90},
-            {"bbox": [73.3, 332.3, 137.1, 387.7], "class": 0, "confidence": 0.89},
-            {"bbox": [300.9, 473.1, 381.9, 549.0], "class": 0, "confidence": 0.89}
-          ]
-        };
-        
-        setApiResponse(sampleResponse);
+      if (!firstImageFile) {
+        throw new Error("No image file found for processing");
       }
 
-      setIsProcessing(false);
+      // Create form data for API request
+      const formData = new FormData();
+      formData.append('image', firstImageFile.file);
+
+      // Prepare headers
+      const headers: HeadersInit = {};
+      if (apiKey) {
+        headers['Authorization'] = `Bearer ${apiKey}`;
+      }
+
+      // Make API request to backend
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        body: formData,
+        headers
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      }
+
+      const result: APIResponse = await response.json();
+      
+      // Validate response format
+      if (!result.predictions || !Array.isArray(result.predictions)) {
+        throw new Error("Invalid API response format");
+      }
+
+      setProcessedImage(firstImageFile.preview || "");
+      setApiResponse(result);
+
       toast({
         title: "Analysis complete",
-        description: "Hail damage detection finished! View results below."
+        description: `Found ${result.num_detections} hail damage areas`
       });
-    }, 3000);
+
+    } catch (error) {
+      console.error("Processing error:", error);
+      toast({
+        title: "Processing failed",
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (

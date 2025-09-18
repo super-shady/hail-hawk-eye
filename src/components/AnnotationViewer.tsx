@@ -98,25 +98,25 @@ export const AnnotationViewer: React.FC<AnnotationViewerProps> = ({
 
       // Draw bounding box
       ctx.strokeStyle = '#a855f7'; // vibranium color
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 4; // Increased from 3 to 4
       ctx.strokeRect(x1, y1, width, height);
 
       // Draw semi-transparent fill
-      ctx.fillStyle = 'rgba(168, 85, 247, 0.2)';
+      ctx.fillStyle = 'rgba(168, 85, 247, 0.15)'; // Slightly more transparent
       ctx.fillRect(x1, y1, width, height);
 
       // Draw label background
       const labelText = `${hailSize} (${(detection.confidence * 100).toFixed(0)}%)`;
-      ctx.font = '14px monospace';
+      ctx.font = 'bold 16px monospace'; // Increased font size and made bold
       const textMetrics = ctx.measureText(labelText);
-      const labelHeight = 20;
+      const labelHeight = 26; // Increased height for larger text
       
-      ctx.fillStyle = 'rgba(168, 85, 247, 0.9)';
-      ctx.fillRect(x1, y1 - labelHeight, textMetrics.width + 10, labelHeight);
+      ctx.fillStyle = 'rgba(168, 85, 247, 0.95)'; // More opaque background
+      ctx.fillRect(x1, y1 - labelHeight, textMetrics.width + 12, labelHeight);
 
       // Draw label text
       ctx.fillStyle = '#ffffff';
-      ctx.fillText(labelText, x1 + 5, y1 - 5);
+      ctx.fillText(labelText, x1 + 6, y1 - 6);
     });
   };
 
