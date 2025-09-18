@@ -1,0 +1,46 @@
+{
+  "name": "HailVision Pro - Drone Roof Inspection",
+  "short_name": "HailVision",
+  "description": "AI-powered hail damage detection for drone pilots and insurance professionals",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0b",
+  "theme_color": "#a855f7",
+  "orientation": "portrait-primary",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-512x512.png", 
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard view showing hail damage analysis"
+    },
+    {
+      "src": "/screenshot-narrow.png", 
+      "sizes": "640x1136",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile upload interface for field work"
+    }
+  ],
+  "features": [
+    "Cross-platform",
+    "Offline support",
+    "File handling"
+  ]
+}
