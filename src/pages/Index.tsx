@@ -1,6 +1,5 @@
 import { HeroSection } from "@/components/HeroSection";
 import { UploadSection } from "@/components/UploadSection";
-import { AuthSection } from "@/components/AuthSection";
 import { DeveloperSettings } from "@/components/DeveloperSettings";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 
@@ -18,7 +17,6 @@ const Index = () => {
             
             <div className="hidden md:flex items-center space-x-8">
               <a href="#upload" className="text-foreground/80 hover:text-vibranium transition-colors">Upload</a>
-              <a href="#pricing" className="text-foreground/80 hover:text-vibranium transition-colors">Pricing</a>
               <a href="#developer" className="text-foreground/80 hover:text-vibranium transition-colors">API</a>
               <button className="px-4 py-2 rounded-lg bg-vibranium text-wakanda-dark font-medium hover:bg-vibranium-glow transition-colors">
                 Sign In
@@ -34,10 +32,6 @@ const Index = () => {
         
         <div id="upload">
           <UploadSection />
-        </div>
-
-        <div id="pricing">
-          <AuthSection />
         </div>
 
         <div id="developer">

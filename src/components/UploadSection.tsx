@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Upload, File, Video, X, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { AnnotationViewer } from "./AnnotationViewer";
 
 interface UploadedFile {
   file: File;
@@ -11,9 +12,21 @@ interface UploadedFile {
   type: 'image' | 'video';
 }
 
+interface APIResponse {
+  num_detections: number;
+  predictions: Array<{
+    bbox: [number, number, number, number];
+    class: number;
+    confidence: number;
+  }>;
+}
+
 export const UploadSection = () => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [apiResponse, setApiResponse] = useState<APIResponse | null>(null);
+  const [processedImage, setProcessedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -93,14 +106,38 @@ export const UploadSection = () => {
       return;
     }
 
+    setIsProcessing(true);
+    setApiResponse(null);
+    setProcessedImage(null);
+
     toast({
       title: "Processing started",
       description: "Your files are being analyzed for hail damage..."
     });
 
     // This would connect to the backend API
-    // For now, we'll simulate processing
+    // For now, we'll simulate processing with sample API response
     setTimeout(() => {
+      const firstImageFile = uploadedFiles.find(f => f.type === 'image');
+      if (firstImageFile?.preview) {
+        setProcessedImage(firstImageFile.preview);
+        
+        // Sample API response matching your backend format
+        const sampleResponse: APIResponse = {
+          num_detections: 14,
+          predictions: [
+            {"bbox": [473.6, 604.1, 569.4, 694.7], "class": 0, "confidence": 0.93},
+            {"bbox": [329.2, 372.8, 402.6, 433.6], "class": 0, "confidence": 0.93},
+            {"bbox": [513.0, 463.5, 593.3, 531.1], "class": 0, "confidence": 0.90},
+            {"bbox": [73.3, 332.3, 137.1, 387.7], "class": 0, "confidence": 0.89},
+            {"bbox": [300.9, 473.1, 381.9, 549.0], "class": 0, "confidence": 0.89}
+          ]
+        };
+        
+        setApiResponse(sampleResponse);
+      }
+
+      setIsProcessing(false);
       toast({
         title: "Analysis complete",
         description: "Hail damage detection finished! View results below."
@@ -192,11 +229,26 @@ export const UploadSection = () => {
             </div>
 
             <div className="text-center">
-              <Button onClick={processFiles} size="lg" className="vibranium-glow">
+              <Button 
+                onClick={processFiles} 
+                disabled={isProcessing}
+                size="lg" 
+                className="vibranium-glow"
+              >
                 <Zap className="mr-2 h-5 w-5" />
-                Analyze for Hail Damage
+                {isProcessing ? "Analyzing..." : "Analyze for Hail Damage"}
               </Button>
             </div>
+          </div>
+        )}
+
+        {/* Results Section */}
+        {processedImage && apiResponse && (
+          <div className="mt-16">
+            <AnnotationViewer 
+              originalImage={processedImage} 
+              apiResponse={apiResponse}
+            />
           </div>
         )}
       </div>
