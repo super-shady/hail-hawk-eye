@@ -1,5 +1,6 @@
 import { HeroSection } from "@/components/HeroSection";
 import { UploadSection } from "@/components/UploadSection";
+import { VideoUploadSection } from "@/components/VideoUploadSection";
 import { DeveloperSettings } from "@/components/DeveloperSettings";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 
@@ -16,7 +17,8 @@ const Index = () => {
             </div>
             
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#upload" className="text-foreground/80 hover:text-vibranium transition-colors">Upload</a>
+              <a href="#upload" className="text-foreground/80 hover:text-vibranium transition-colors">Images</a>
+              <a href="#video" className="text-foreground/80 hover:text-vibranium transition-colors">Videos</a>
               <a href="#developer" className="text-foreground/80 hover:text-vibranium transition-colors">API</a>
               <button className="px-4 py-2 rounded-lg bg-vibranium text-wakanda-dark font-medium hover:bg-vibranium-glow transition-colors">
                 Sign In
@@ -32,6 +34,10 @@ const Index = () => {
         
         <div id="upload">
           <UploadSection />
+        </div>
+
+        <div id="video">
+          <VideoUploadSection />
         </div>
 
         <div id="developer">
