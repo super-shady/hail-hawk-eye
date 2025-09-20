@@ -12,27 +12,34 @@ interface UploadedVideo {
 }
 
 interface VideoResults {
-  video_info: {
-    total_frames: number;
-    fps: number;
-    duration: number;
-    processed_frames: number;
+  success: boolean;
+  s3_key: string;
+  processing_params: {
+    frame_interval: number;
   };
-  detection_summary: {
-    frames_with_damage: number;
-    total_detections: number;
-    damage_percentage: number;
-  };
-  frame_results: Array<{
-    frame_number: number;
-    timestamp: number;
-    detections: Array<{
-      class: number;
-      confidence: number;
-      bbox: [number, number, number, number];
+  results: {
+    video_info: {
+      total_frames: number;
+      fps: number;
+      duration: number;
+      processed_frames: number;
+    };
+    detection_summary: {
+      frames_with_damage: number;
+      total_detections: number;
+      damage_percentage: number;
+    };
+    frame_results: Array<{
+      frame_number: number;
+      timestamp: number;
+      detections: Array<{
+        class: number;
+        confidence: number;
+        bbox: [number, number, number, number];
+      }>;
+      detection_count: number;
     }>;
-    detection_count: number;
-  }>;
+  };
 }
 
 export const VideoUploadSection = () => {

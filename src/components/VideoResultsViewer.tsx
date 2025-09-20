@@ -6,27 +6,34 @@ import { Badge } from "@/components/ui/badge";
 import { Play, Pause, SkipForward, SkipBack, AlertTriangle } from "lucide-react";
 
 interface VideoResults {
-  video_info: {
-    total_frames: number;
-    fps: number;
-    duration: number;
-    processed_frames: number;
+  success: boolean;
+  s3_key: string;
+  processing_params: {
+    frame_interval: number;
   };
-  detection_summary: {
-    frames_with_damage: number;
-    total_detections: number;
-    damage_percentage: number;
-  };
-  frame_results: Array<{
-    frame_number: number;
-    timestamp: number;
-    detections: Array<{
-      class: number;
-      confidence: number;
-      bbox: [number, number, number, number];
+  results: {
+    video_info: {
+      total_frames: number;
+      fps: number;
+      duration: number;
+      processed_frames: number;
+    };
+    detection_summary: {
+      frames_with_damage: number;
+      total_detections: number;
+      damage_percentage: number;
+    };
+    frame_results: Array<{
+      frame_number: number;
+      timestamp: number;
+      detections: Array<{
+        class: number;
+        confidence: number;
+        bbox: [number, number, number, number];
+      }>;
+      detection_count: number;
     }>;
-    detection_count: number;
-  }>;
+  };
 }
 
 interface VideoResultsViewerProps {
@@ -37,16 +44,24 @@ export const VideoResultsViewer = ({ videoResults }: VideoResultsViewerProps) =>
   const [currentTimestamp, setCurrentTimestamp] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const { video_info, detection_summary, frame_results } = videoResults;
+  // Destructure the nested results structure safely
+  const { results } = videoResults || {};
+  const { 
+    video_info = {} as any, 
+    detection_summary = {} as any, 
+    frame_results = [] as any[] 
+  } = results || {};
 
   // Get frame at current timestamp
   const getCurrentFrame = () => {
+    if (!frame_results || frame_results.length === 0) return null;
     return frame_results.find(frame => 
       Math.abs(frame.timestamp - currentTimestamp) < 0.5
     );
   };
 
   const jumpToNextDamage = () => {
+    if (!frame_results || frame_results.length === 0) return;
     const nextDamageFrame = frame_results.find(frame => 
       frame.timestamp > currentTimestamp && frame.detection_count > 0
     );
@@ -56,6 +71,7 @@ export const VideoResultsViewer = ({ videoResults }: VideoResultsViewerProps) =>
   };
 
   const jumpToPreviousDamage = () => {
+    if (!frame_results || frame_results.length === 0) return;
     const previousDamageFrame = [...frame_results]
       .reverse()
       .find(frame => 
@@ -86,19 +102,19 @@ export const VideoResultsViewer = ({ videoResults }: VideoResultsViewerProps) =>
         <h3 className="text-2xl font-bold mb-6 text-gradient">Analysis Results</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="text-center">
-            <div className="text-3xl font-bold text-vibranium">{detection_summary.damage_percentage.toFixed(1)}%</div>
+            <div className="text-3xl font-bold text-vibranium">{detection_summary.damage_percentage?.toFixed(1) || '0'}%</div>
             <div className="text-sm text-muted-foreground">Video with Damage</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-vibranium">{detection_summary.frames_with_damage}</div>
+            <div className="text-3xl font-bold text-vibranium">{detection_summary.frames_with_damage || 0}</div>
             <div className="text-sm text-muted-foreground">Frames with Damage</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-vibranium">{detection_summary.total_detections}</div>
+            <div className="text-3xl font-bold text-vibranium">{detection_summary.total_detections || 0}</div>
             <div className="text-sm text-muted-foreground">Total Detections</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-vibranium">{formatTime(video_info.duration)}</div>
+            <div className="text-3xl font-bold text-vibranium">{formatTime(video_info.duration || 0)}</div>
             <div className="text-sm text-muted-foreground">Video Duration</div>
           </div>
         </div>
@@ -114,20 +130,20 @@ export const VideoResultsViewer = ({ videoResults }: VideoResultsViewerProps) =>
             <Slider
               value={[currentTimestamp]}
               onValueChange={(value) => setCurrentTimestamp(value[0])}
-              max={video_info.duration}
+              max={video_info.duration || 100}
               step={0.1}
               className="w-full"
             />
             
             {/* Damage markers on timeline */}
             <div className="absolute top-0 w-full h-6 pointer-events-none">
-              {frame_results.map((frame, index) => (
+              {frame_results && frame_results.map((frame, index) => (
                 frame.detection_count > 0 && (
                   <div
                     key={index}
                     className="absolute top-0 w-1 h-6 bg-destructive"
                     style={{
-                      left: `${(frame.timestamp / video_info.duration) * 100}%`
+                      left: `${(frame.timestamp / (video_info.duration || 1)) * 100}%`
                     }}
                   />
                 )
@@ -166,7 +182,7 @@ export const VideoResultsViewer = ({ videoResults }: VideoResultsViewerProps) =>
           
           {/* Current timestamp */}
           <div className="text-center text-sm text-muted-foreground">
-            {formatTime(currentTimestamp)} / {formatTime(video_info.duration)}
+            {formatTime(currentTimestamp)} / {formatTime(video_info.duration || 0)}
           </div>
         </div>
       </Card>
@@ -206,7 +222,7 @@ export const VideoResultsViewer = ({ videoResults }: VideoResultsViewerProps) =>
             <div>
               <h5 className="font-semibold mb-2">Frame Info</h5>
               <div className="space-y-1 text-sm">
-                <p><span className="font-medium">Frame:</span> {currentFrame.frame_number} / {video_info.total_frames}</p>
+                <p><span className="font-medium">Frame:</span> {currentFrame.frame_number} / {video_info.total_frames || 0}</p>
                 <p><span className="font-medium">Timestamp:</span> {formatTime(currentFrame.timestamp)}</p>
                 <p><span className="font-medium">Detections:</span> {currentFrame.detection_count}</p>
               </div>
@@ -217,10 +233,10 @@ export const VideoResultsViewer = ({ videoResults }: VideoResultsViewerProps) =>
 
       {/* All Damaged Frames List */}
       <Card className="p-6">
-        <h4 className="text-xl font-semibold mb-4">All Damaged Frames ({detection_summary.frames_with_damage})</h4>
+        <h4 className="text-xl font-semibold mb-4">All Damaged Frames ({detection_summary.frames_with_damage || 0})</h4>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-64 overflow-y-auto">
-          {frame_results
+          {frame_results && frame_results
             .filter(frame => frame.detection_count > 0)
             .map((frame, index) => (
               <Button
