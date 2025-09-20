@@ -8,7 +8,7 @@ import { Settings, Save, TestTube, CheckCircle, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export const DeveloperSettings = () => {
-  const [endpoint, setEndpoint] = useState("https://api.hailvision.ai/v1/detect");
+  const [endpoint, setEndpoint] = useState("http://ec2-52-15-67-109.us-east-2.compute.amazonaws.com:8081");
   const [apiKey, setApiKey] = useState("");
   const [isTestingConnection, setIsTestingConnection] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -89,20 +89,20 @@ export const DeveloperSettings = () => {
           <div className="space-y-6">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="endpoint" className="text-lg font-medium">
-                  Backend Endpoint URL
-                </Label>
+              <Label htmlFor="endpoint" className="text-lg font-medium">
+                Backend Server URL
+              </Label>
                 {getStatusBadge()}
               </div>
               <Input
                 id="endpoint"
                 value={endpoint}
                 onChange={(e) => setEndpoint(e.target.value)}
-                placeholder="https://your-api.com/v1/detect"
+                placeholder="http://your-server.com:8081"
                 className="text-base"
               />
               <p className="text-sm text-muted-foreground">
-                Your computer vision API endpoint that processes images and returns bounding box data
+                Your backend server base URL (endpoints: /predict, /video/upload-url, /video/process)
               </p>
             </div>
 

@@ -107,13 +107,13 @@ export const UploadSection = () => {
     }
 
     // Get backend settings from localStorage
-    const endpoint = localStorage.getItem('hailvision_endpoint');
+    const serverUrl = localStorage.getItem('hailvision_endpoint');
     const apiKey = localStorage.getItem('hailvision_api_key');
 
-    if (!endpoint) {
+    if (!serverUrl) {
       toast({
         title: "Backend not configured",
-        description: "Please configure your computer vision API endpoint in Developer Settings",
+        description: "Please configure your backend server URL in Developer Settings",
         variant: "destructive"
       });
       return;
@@ -145,7 +145,7 @@ export const UploadSection = () => {
       }
 
       // Make API request to backend
-      const response = await fetch(endpoint, {
+      const response = await fetch(`${serverUrl}/predict`, {
         method: 'POST',
         body: formData,
         headers

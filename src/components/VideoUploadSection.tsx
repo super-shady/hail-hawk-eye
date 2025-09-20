@@ -110,10 +110,10 @@ export const VideoUploadSection = () => {
   };
 
   const getPresignedUrl = async (videoFile: File) => {
-    const endpoint = localStorage.getItem('hailvision_endpoint');
+    const serverUrl = localStorage.getItem('hailvision_endpoint');
     const apiKey = localStorage.getItem('hailvision_api_key');
 
-    if (!endpoint) {
+    if (!serverUrl) {
       throw new Error("Backend not configured");
     }
 
@@ -124,7 +124,7 @@ export const VideoUploadSection = () => {
       headers['Authorization'] = `Bearer ${apiKey}`;
     }
 
-    const response = await fetch(`${endpoint}/video/upload-url`, {
+    const response = await fetch(`${serverUrl}/video/upload-url`, {
       method: 'POST',
       headers,
       body: JSON.stringify({ filename: videoFile.name })
@@ -149,7 +149,7 @@ export const VideoUploadSection = () => {
   };
 
   const processVideo = async (s3Key: string) => {
-    const endpoint = localStorage.getItem('hailvision_endpoint');
+    const serverUrl = localStorage.getItem('hailvision_endpoint');
     const apiKey = localStorage.getItem('hailvision_api_key');
 
     const headers: HeadersInit = {
@@ -159,7 +159,7 @@ export const VideoUploadSection = () => {
       headers['Authorization'] = `Bearer ${apiKey}`;
     }
 
-    const response = await fetch(`${endpoint}/video/process`, {
+    const response = await fetch(`${serverUrl}/video/process`, {
       method: 'POST',
       headers,
       body: JSON.stringify({ 
@@ -185,11 +185,11 @@ export const VideoUploadSection = () => {
       return;
     }
 
-    const endpoint = localStorage.getItem('hailvision_endpoint');
-    if (!endpoint) {
+    const serverUrl = localStorage.getItem('hailvision_endpoint');
+    if (!serverUrl) {
       toast({
         title: "Backend not configured",
-        description: "Please configure your computer vision API endpoint in Developer Settings",
+        description: "Please configure your backend server URL in Developer Settings",
         variant: "destructive"
       });
       return;
