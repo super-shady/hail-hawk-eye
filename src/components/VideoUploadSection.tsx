@@ -14,6 +14,9 @@ interface UploadedVideo {
 interface VideoResults {
   success: boolean;
   s3_key: string;
+  annotated_s3_key: string;
+  original_video_url: string;
+  annotated_video_url: string;
   processing_params: {
     frame_interval: number;
   };
